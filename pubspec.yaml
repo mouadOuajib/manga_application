@@ -1,0 +1,43 @@
+name: mangago
+description: A new Flutter project.
+
+publish_to: "none"
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.0.6 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.2
+  hidden_drawer_menu: ^3.0.1
+  flutter_native_splash: ^2.3.1
+  flutter_launcher_icons: ^0.13.1
+  flutter_screenutil: ^5.8.4
+  http: ^1.1.0
+  html: ^0.15.4
+  flutter_staggered_animations: ^1.1.1
+  contained_tab_bar_view: ^0.8.0
+  scrollable_positioned_list: ^0.3.8
+  beautiful_soup_dart: ^0.3.0
+  provider: ^6.0.5
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^2.0.0
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/icons/logo.png"
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/
+    - assets/icons/
