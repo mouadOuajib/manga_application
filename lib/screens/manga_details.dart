@@ -1,15 +1,17 @@
 import 'dart:developer';
-
+import 'dart:io';
 import 'package:contained_tab_bar_view/contained_tab_bar_view.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mangago/datascraper/manga_scraper.dart';
 import 'package:mangago/screens/read_page.dart';
-import 'package:mangago/widgets/app_button.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import '../models/manga.dart';
 import '../provider/watch_later.dart';
 import 'package:provider/provider.dart';
-
+import '../widgets/app_button.dart';
 import '../widgets/upload_dialogue.dart';
 
 class MangaDetails extends StatefulWidget {
@@ -38,10 +40,62 @@ class _MangaDetailsState extends State<MangaDetails> {
     });
   }
 
+  bool permissionGranted = false;
+
   @override
   void initState() {
     getManga = mangaScraper.fetchMangaInfo(widget.mangaLink);
     super.initState();
+    _getStoragePermission;
+  }
+
+  Future _getStoragePermission() async {
+    await Permission.storage.request().isGranted;
+    log("get permission");
+    if (await Permission.storage.request().isGranted) {
+      setState(() {
+        permissionGranted = true;
+      });
+    } else if (await Permission.storage.request().isPermanentlyDenied) {
+      await openAppSettings();
+    } else if (await Permission.storage.request().isDenied) {
+      setState(() {
+        permissionGranted = false;
+      });
+    }
+  }
+
+  Future<void> requestStoragePermission(String mangaTitle, String chapterTitle,
+      List<String> chapterImages) async {
+    final status = await Permission.storage.request();
+    if (status.isGranted) {
+      await downloadAndSaveChapters(mangaTitle, chapterTitle, chapterImages);
+    } else {
+      log("the permission is denied");
+    }
+  }
+
+  Future<void> downloadAndSaveChapters(String mangaTitle, String chapterTitle,
+      List<String> chapterImages) async {
+    final directory = await getApplicationDocumentsDirectory();
+    final mangaDirectory =
+        Directory('${directory.path}/$mangaTitle/$chapterTitle');
+    await mangaDirectory.create(recursive: true);
+
+    for (int i = 0; i < chapterImages.length; i++) {
+      final request = await HttpClient().getUrl(Uri.parse(chapterImages[i]));
+      final response = await request.close();
+
+      if (response.statusCode == HttpStatus.ok) {
+        final Uint8List bytes =
+            await consolidateHttpClientResponseBytes(response);
+
+        final file = File('${mangaDirectory.path}/image_$i.jpg');
+        await file.writeAsBytes(bytes);
+      } else {
+        log("images can't be downloded");
+      }
+    }
   }
 
   @override
@@ -255,10 +309,10 @@ class _MangaDetailsState extends State<MangaDetails> {
                                   'chapters',
                                   style: TextStyle(color: Colors.black),
                                 ),
-                                // Text(
-                                //   'comments',
-                                //   style: TextStyle(color: Colors.black),
-                                // ),
+                                Text(
+                                  'comments',
+                                  style: TextStyle(color: Colors.black),
+                                ),
                               ],
                               views: [
                                 Padding(
@@ -527,7 +581,26 @@ class _MangaDetailsState extends State<MangaDetails> {
                                                   ],
                                                 ),
                                                 trailing: InkWell(
-                                                    onTap: () {},
+                                                    onTap: () {
+                                                      if (permissionGranted ==
+                                                          false) {
+                                                        requestStoragePermission(
+                                                            "manga$index",
+                                                            "chapter$index", [
+                                                          "https://cm.blazefast.co/1d/57/1d5799b2d06f4b91c5e245cd8b0aee0b.jpg",
+                                                          "https://cm.blazefast.co/cf/4f/cf4fb340afc1ae8375ff7b5798dd1abb.jpg",
+                                                          "https://cm.blazefast.co/ed/42/ed42d066ee78bceef49d6c4be47b02cc.jpg"
+                                                        ]);
+                                                      } else {
+                                                        downloadAndSaveChapters(
+                                                            "manga$index",
+                                                            "chapter$index", [
+                                                          "https://cm.blazefast.co/1d/57/1d5799b2d06f4b91c5e245cd8b0aee0b.jpg",
+                                                          "https://cm.blazefast.co/cf/4f/cf4fb340afc1ae8375ff7b5798dd1abb.jpg",
+                                                          "https://cm.blazefast.co/ed/42/ed42d066ee78bceef49d6c4be47b02cc.jpg"
+                                                        ]);
+                                                      }
+                                                    },
                                                     child: const Icon(
                                                         Icons.download)),
                                               ),
@@ -540,15 +613,15 @@ class _MangaDetailsState extends State<MangaDetails> {
                                     ),
                                   ],
                                 ),
-                                // Container(
-                                //   color: Colors.green,
-                                //   child: const Center(
-                                //     child: Text(
-                                //       'Comments content goes here',
-                                //       style: TextStyle(color: Colors.white),
-                                //     ),
-                                //   ),
-                                // ),
+                                Container(
+                                  color: Colors.green,
+                                  child: const Center(
+                                    child: Text(
+                                      'Comments content goes here',
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                  ),
+                                ),
                               ],
                               onChange: (index) => log(index.toString()),
                             ),
