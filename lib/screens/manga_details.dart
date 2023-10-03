@@ -46,15 +46,18 @@ class _MangaDetailsState extends State<MangaDetails> {
   void initState() {
     getManga = mangaScraper.fetchMangaInfo(widget.mangaLink);
     super.initState();
-    _getStoragePermission;
+    _getStoragePermission();
   }
 
   Future _getStoragePermission() async {
-    await Permission.storage.request().isGranted;
+    log("1");
+    final permission = await Permission.storage.request().isGranted;
     log("get permission");
-    if (await Permission.storage.request().isGranted) {
+    log(permission.toString());
+    if (permission) {
       setState(() {
         permissionGranted = true;
+        log(permissionGranted.toString());
       });
     } else if (await Permission.storage.request().isPermanentlyDenied) {
       await openAppSettings();
@@ -582,9 +585,8 @@ class _MangaDetailsState extends State<MangaDetails> {
                                                 ),
                                                 trailing: InkWell(
                                                     onTap: () {
-                                                      if (permissionGranted ==
-                                                          false) {
-                                                        requestStoragePermission(
+                                                      if (permissionGranted) {
+                                                        downloadAndSaveChapters(
                                                             "manga$index",
                                                             "chapter$index", [
                                                           "https://cm.blazefast.co/1d/57/1d5799b2d06f4b91c5e245cd8b0aee0b.jpg",
@@ -592,7 +594,7 @@ class _MangaDetailsState extends State<MangaDetails> {
                                                           "https://cm.blazefast.co/ed/42/ed42d066ee78bceef49d6c4be47b02cc.jpg"
                                                         ]);
                                                       } else {
-                                                        downloadAndSaveChapters(
+                                                        requestStoragePermission(
                                                             "manga$index",
                                                             "chapter$index", [
                                                           "https://cm.blazefast.co/1d/57/1d5799b2d06f4b91c5e245cd8b0aee0b.jpg",
