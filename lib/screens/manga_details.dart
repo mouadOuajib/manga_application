@@ -68,11 +68,12 @@ class _MangaDetailsState extends State<MangaDetails> {
     }
   }
 
-  Future<void> requestStoragePermission(String mangaTitle, String chapterTitle,
-      List<String> chapterImages) async {
+  Future<void> requestStoragePermission() async {
     final status = await Permission.storage.request();
     if (status.isGranted) {
-      await downloadAndSaveChapters(mangaTitle, chapterTitle, chapterImages);
+      setState(() {
+        permissionGranted = true;
+      });
     } else {
       log("the permission is denied");
     }
@@ -594,13 +595,7 @@ class _MangaDetailsState extends State<MangaDetails> {
                                                           "https://cm.blazefast.co/ed/42/ed42d066ee78bceef49d6c4be47b02cc.jpg"
                                                         ]);
                                                       } else {
-                                                        requestStoragePermission(
-                                                            "manga$index",
-                                                            "chapter$index", [
-                                                          "https://cm.blazefast.co/1d/57/1d5799b2d06f4b91c5e245cd8b0aee0b.jpg",
-                                                          "https://cm.blazefast.co/cf/4f/cf4fb340afc1ae8375ff7b5798dd1abb.jpg",
-                                                          "https://cm.blazefast.co/ed/42/ed42d066ee78bceef49d6c4be47b02cc.jpg"
-                                                        ]);
+                                                        requestStoragePermission();
                                                       }
                                                     },
                                                     child: const Icon(
