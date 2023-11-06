@@ -1,16 +1,7 @@
-# mangago
+# MangaGo
 
-A new Flutter project.
+MangaGo is a dynamic manga app built using the Flutter 3 framework, incorporating advanced web scraping techniques to provide a seamless manga reading experience. If you find this project inspiring and wish to motivate me to pursue more innovative projects like this, kindly consider giving a star to this repository and sharing it with your fellow manga enthusiasts.
 
-## Getting Started
+## Screenshots
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+![MangaGo Screenshot](assets/screenshots/1.png)
