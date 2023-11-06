@@ -588,12 +588,13 @@ class _MangaDetailsState extends State<MangaDetails> {
                                                     onTap: () {
                                                       if (permissionGranted) {
                                                         downloadAndSaveChapters(
-                                                            "manga$index",
-                                                            "chapter$index", [
-                                                          "https://cm.blazefast.co/1d/57/1d5799b2d06f4b91c5e245cd8b0aee0b.jpg",
-                                                          "https://cm.blazefast.co/cf/4f/cf4fb340afc1ae8375ff7b5798dd1abb.jpg",
-                                                          "https://cm.blazefast.co/ed/42/ed42d066ee78bceef49d6c4be47b02cc.jpg"
-                                                        ]);
+                                                            widget.title,
+                                                            """${chapter["chapterName"]}""",
+                                                            [
+                                                              "https://cm.blazefast.co/1d/57/1d5799b2d06f4b91c5e245cd8b0aee0b.jpg",
+                                                              "https://cm.blazefast.co/cf/4f/cf4fb340afc1ae8375ff7b5798dd1abb.jpg",
+                                                              "https://cm.blazefast.co/ed/42/ed42d066ee78bceef49d6c4be47b02cc.jpg"
+                                                            ]);
                                                       } else {
                                                         requestStoragePermission();
                                                       }

@@ -1,7 +1,7 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as path;
 
 class DownloadScreen extends StatefulWidget {
   const DownloadScreen({Key? key});
@@ -28,18 +28,21 @@ class _DownloadScreenState extends State<DownloadScreen> {
     }).toList();
 
     for (var mangaDirectory in mangaDirectories) {
-      final mangaTitle = mangaDirectory.uri.pathSegments.last;
+      final mangaPath = mangaDirectory.uri.path;
+      final mangaTitle =
+          path.basename(mangaPath); // Extract the manga title from the path
       downloadedMangas.add(mangaTitle);
 
       final chapterDirectories =
-          await Directory(mangaDirectory.path).list().where((entity) {
+          await Directory(mangaPath).list().where((entity) {
         return entity is Directory;
       }).toList();
 
       final chapterTitles = chapterDirectories.map((chapterDirectory) {
-        return chapterDirectory.uri.pathSegments.last;
+        final chapterPath = chapterDirectory.uri.path;
+        return path
+            .basename(chapterPath); // Extract the chapter title from the path
       }).toList();
-
       downloadedChapters[mangaTitle] = chapterTitles;
     }
 
